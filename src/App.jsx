@@ -27,6 +27,7 @@ function App() {
   const [errorMsg, setErrorMsg] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [actors, setActors] = useState([]);
 
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -49,7 +50,6 @@ function App() {
         throw new Error("Failed to fetch movies");
       } else {
         const data = await response.json();
-        console.log(data.results);
 
         if (data.results === "false") {
           setErrorMsg("Failed to fetch movies");
@@ -61,7 +61,6 @@ function App() {
           await updateSearchCount(query, data.results[0]);
         }
       }
-      console.log(movies);
     } catch (error) {
       setErrorMsg("Error fetching movies. Please try again later...");
       throw new Error(error.message);
@@ -86,10 +85,39 @@ function App() {
     }
   };
 
-  const handleShowDetails = (id) => {
-    const movieToFind = movies.find((movie) => movie.id === id);
-    setSelectedMovie(movieToFind);
-    setShowModal(true);
+  const handleShowDetails = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`,
+        API_OPTIONS
+      );
+      if (!response.ok) throw new Error("Failed to fetch movie details");
+      const data = await response.json();
+      setSelectedMovie(data);
+      setShowModal(true);
+    } catch (error) {
+      setErrorMsg("Error fetching movie details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getActors = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits`,
+        API_OPTIONS
+      );
+      if (!response.ok) throw new Error("Failed to fetch actors");
+      const data = await response.json();
+      setActors(data.credits.cast);
+    } catch (error) {
+      setErrorMsg("Failed to get actors.Please try again later!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -144,13 +172,18 @@ function App() {
                 <MovieCard
                   key={movie.id}
                   movie={movie}
-                  onClick={() => handleShowDetails(movie.id)}
+                  onClick={() => {
+                    handleShowDetails(movie.id);
+                    getActors(movie.id);
+                  }}
                 />
               ))}
             </ul>
           )}
         </section>
-        {showModal && <MovieDetails movie={selectedMovie} />}
+        {showModal && (
+          <MovieDetails movie={selectedMovie} onClick={() => setShowModal(false)} actors={actors} />
+        )}
       </div>
     </main>
   );

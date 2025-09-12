@@ -20,7 +20,7 @@ const MovieCard = ({
           <span>•</span>
           <p className="year">{release_date ? release_date.split("-")[0] : "N/A"}</p>
           <button
-            className="border-2 rounded-xl p-2  cursor-pointer bg-red-600 hover:bg-red-400"
+            className="border-2 rounded-xl p-2  cursor-pointer bg-gray-800 hover:bg-gray-600 hover:text-white"
             onClick={onClick}
           >
             Details
