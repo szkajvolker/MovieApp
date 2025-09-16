@@ -147,6 +147,9 @@ function App() {
       return;
     }
     await incrementLikes(movie.id, movie);
+    setMovies((prev) =>
+      prev.map((m) => (m.id === movie.id ? { ...m, likes: (m.likes || 0) + 1 } : m))
+    );
     await loadLikedMovies();
   };
 
