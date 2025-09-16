@@ -1,9 +1,23 @@
+import { IoIosHeart } from "react-icons/io";
+import { IoMdHeartDislike } from "react-icons/io";
+
 const MovieCard = ({
   onClick,
-  movie: { title, vote_average, poster_path, release_date, original_language },
+  onLike,
+  movie: { title, vote_average, poster_path, release_date, original_language, likes = 0 },
 }) => {
   return (
     <div className="movie-card">
+      <div className="flex flex-row">
+        <button onClick={onLike} className="like-btn cursor-pointer">
+          {likes > 0 ? (
+            <IoIosHeart className="text-red-500 text-2xl"></IoIosHeart>
+          ) : (
+            <IoMdHeartDislike></IoMdHeartDislike>
+          )}
+        </button>
+        <span className="ml-1">{likes}</span>
+      </div>
       <img
         src={poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : "/no-movie.png"}
         alt={title}

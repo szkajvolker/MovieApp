@@ -4,7 +4,12 @@ import Notification from "./components/Notification.jsx";
 import Loader from "./components/Loader.jsx";
 import MovieCard from "./components/MovieCard.jsx";
 import { useDebounce } from "react-use";
-import { getTrendingMovies, updateSearchCount } from "./appwrite.js";
+import {
+  getTrendingMovies,
+  getTrendingMoviesByLikes,
+  incrementLikes,
+  updateSearchCount,
+} from "./appwrite.js";
 import MovieDetails from "./components/MovieDetails.jsx";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -33,6 +38,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [likedMovies, setLikedMovies] = useState([]);
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 1000, [searchTerm]);
 
@@ -85,6 +91,21 @@ function App() {
     }
   };
 
+  const loadLikedMovies = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const movies = await getTrendingMoviesByLikes();
+      setLikedMovies(movies);
+    } catch (error) {
+      console.error("Error fetching trending movies by likes", error);
+      setErrorMsg("Error fetching movies");
+    } finally {
+      setLoading(false);
+      setError(false);
+    }
+  };
+
   const handleShowDetails = async (id) => {
     setLoading(true);
     try {
@@ -97,7 +118,7 @@ function App() {
       setSelectedMovie(data);
       setShowModal(true);
     } catch (error) {
-      setErrorMsg("Error fetching movie details.");
+      setErrorMsg("Error fetching movie details.", error);
     } finally {
       setLoading(false);
     }
@@ -114,10 +135,19 @@ function App() {
       const data = await response.json();
       setActors(data.credits.cast);
     } catch (error) {
-      setErrorMsg("Failed to get actors.Please try again later!");
+      setErrorMsg("Failed to get actors.Please try again later!", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLike = async (movie) => {
+    if (!movie.id) {
+      console.log("No valid ID!", movie);
+      return;
+    }
+    await incrementLikes(movie.id, movie);
+    await loadLikedMovies();
   };
 
   useEffect(() => {
@@ -126,6 +156,7 @@ function App() {
 
   useEffect(() => {
     loadTrendingMovies();
+    loadLikedMovies();
   }, []);
 
   return (
@@ -157,6 +188,19 @@ function App() {
             </section>
           )
         )}
+        {likedMovies.length > 0 && (
+          <section className="trending">
+            <h2>Trending by likes</h2>
+            <ul>
+              {likedMovies.map((movie, i) => (
+                <li key={movie.$id}>
+                  <p>{i + 1}</p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <section className="all-movies">
           <h2>All Movies</h2>
@@ -176,6 +220,7 @@ function App() {
                     handleShowDetails(movie.id);
                     getActors(movie.id);
                   }}
+                  onLike={() => handleLike(movie)}
                 />
               ))}
             </ul>

@@ -38,8 +38,49 @@ export const updateSearchCount = async (searchTerm, movie) => {
 export const getTrendingMovies = async () => {
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
+      Query.greaterThan("count", 0),
       Query.limit(5),
       Query.orderDesc("count"),
+    ]);
+    return result.documents;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const incrementLikes = async (movieId, movie) => {
+  console.log(movie);
+
+  console.log(movieId);
+  try {
+    const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
+      Query.equal("movie_id", [movieId]),
+    ]);
+    if (result.documents.length > 0) {
+      const doc = result.documents[0];
+      await database.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, {
+        likes: (doc.likes || 0) + 1,
+      });
+    } else {
+      await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
+        likes: 1,
+        searchTerm: "",
+        count: 0,
+        movie_id: movieId,
+        poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getTrendingMoviesByLikes = async () => {
+  try {
+    const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
+      Query.greaterThan("likes", 0),
+      Query.limit(5),
+      Query.orderDesc("likes"),
     ]);
     return result.documents;
   } catch (error) {

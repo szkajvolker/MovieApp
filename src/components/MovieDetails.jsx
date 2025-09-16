@@ -7,7 +7,6 @@ const MovieDetails = ({
     poster_path,
     release_date,
     original_language,
-    genre_ids,
     overview,
     backdrop_path,
     tagline,
