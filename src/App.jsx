@@ -5,12 +5,14 @@ import Loader from "./components/Loader.jsx";
 import MovieCard from "./components/MovieCard.jsx";
 import { useDebounce } from "react-use";
 import {
+  getAllLikes,
   getTrendingMovies,
   getTrendingMoviesByLikes,
   incrementLikes,
   updateSearchCount,
 } from "./appwrite.js";
 import MovieDetails from "./components/MovieDetails.jsx";
+import { Query } from "appwrite";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -39,6 +41,7 @@ function App() {
 
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [likedMovies, setLikedMovies] = useState([]);
+  const [likedMovieIds, setLikedMovieIds] = useState([]);
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 1000, [searchTerm]);
 
@@ -62,7 +65,12 @@ function App() {
           setMovies([]);
           return;
         }
-        setMovies(data.results || []);
+        const likesDocs = await getAllLikes();
+        const mergedMovies = (data.results || []).map((movie) => {
+          const found = likesDocs.find((doc) => doc.movie_id === movie.id);
+          return { ...movie, likes: found ? found.likes : 0 };
+        });
+        setMovies(mergedMovies);
         if (query && data.results.length > 0) {
           await updateSearchCount(query, data.results[0]);
         }
@@ -150,6 +158,7 @@ function App() {
     setMovies((prev) =>
       prev.map((m) => (m.id === movie.id ? { ...m, likes: (m.likes || 0) + 1 } : m))
     );
+    setLikedMovieIds((prev) => (prev.includes(movie.id) ? prev : [...prev, movie.id]));
     await loadLikedMovies();
   };
 

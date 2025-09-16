@@ -87,3 +87,10 @@ export const getTrendingMoviesByLikes = async () => {
     console.error(error);
   }
 };
+
+export const getAllLikes = async () => {
+  const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
+    Query.select(["movie_id", "likes"]),
+  ]);
+  return result.documents;
+};
