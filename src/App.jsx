@@ -162,6 +162,10 @@ function App() {
     await loadLikedMovies();
   };
 
+  const topMovies = [...movies]
+    .sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0))
+    .slice(0, 5);
+
   useEffect(() => {
     fetchMoviesData(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
@@ -188,10 +192,10 @@ function App() {
         ) : (
           trendingMovies.length > 0 && (
             <section className="trending">
-              <h2>Trending Movies</h2>
+              <h2 className="bg-gray-800 rounded-xl p-2">Trending Movies</h2>
               <ul>
                 {trendingMovies.map((movie, i) => (
-                  <li key={movie.$id}>
+                  <li key={movie.$id || i}>
                     <p>{i + 1}</p>
                     <img src={movie.poster_url} alt={movie.title} />
                   </li>
@@ -200,9 +204,33 @@ function App() {
             </section>
           )
         )}
+        {topMovies.length > 0 && (
+          <section className="trending">
+            <h2 className="bg-gray-800 rounded-xl p-2">
+              <span className="text-gradient">Top 5 </span>movies{" "}
+              <span className="text-gradient"> by rating</span>
+            </h2>
+            <ul>
+              {topMovies.map((movie, i) => (
+                <li key={movie.id || i}>
+                  <p>{i + 1}</p>
+                  <img
+                    src={
+                      movie.poster_url ||
+                      (movie.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                        : "")
+                    }
+                    alt={movie.title || movie.name || "Movie"}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         {likedMovies.length > 0 && (
           <section className="trending">
-            <h2>Trending by likes</h2>
+            <h2 className="bg-gray-800 rounded-xl p-2">Trending by likes</h2>
             <ul>
               {likedMovies.map((movie, i) => (
                 <li key={movie.$id}>
