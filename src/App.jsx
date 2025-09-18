@@ -12,7 +12,6 @@ import {
   updateSearchCount,
 } from "./appwrite.js";
 import MovieDetails from "./components/MovieDetails.jsx";
-import { Query } from "appwrite";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -42,6 +41,7 @@ function App() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [likedMovies, setLikedMovies] = useState([]);
   const [likedMovieIds, setLikedMovieIds] = useState([]);
+  const [topMovies, setTopMovies] = useState([]);
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 1000, [searchTerm]);
 
@@ -80,6 +80,28 @@ function App() {
       throw new Error(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTopMovies = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&vote_count.gte=1000",
+        API_OPTIONS
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      } else {
+        const data = await res.json();
+        setTopMovies(data.results || []);
+        console.log(data);
+      }
+    } catch (err) {
+      setErrorMsg("Failed to get data", err);
+    } finally {
+      setLoading(false);
+      setError(false);
     }
   };
 
@@ -162,7 +184,7 @@ function App() {
     await loadLikedMovies();
   };
 
-  const topMovies = [...movies]
+  const top10Movies = [...topMovies]
     .sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0))
     .slice(0, 5);
 
@@ -173,6 +195,7 @@ function App() {
   useEffect(() => {
     loadTrendingMovies();
     loadLikedMovies();
+    fetchTopMovies();
   }, []);
 
   return (
@@ -204,16 +227,17 @@ function App() {
             </section>
           )
         )}
-        {topMovies.length > 0 && (
+        {top10Movies.length > 0 && (
           <section className="trending">
             <h2 className="bg-gray-800 rounded-xl p-2">
               <span className="text-gradient">Top 5 </span>movies{" "}
               <span className="text-gradient"> by rating</span>
             </h2>
             <ul>
-              {topMovies.map((movie, i) => (
+              {top10Movies.map((movie, i) => (
                 <li key={movie.id || i}>
                   <p>{i + 1}</p>
+
                   <img
                     src={
                       movie.poster_url ||
