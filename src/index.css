@@ -59,18 +59,25 @@
     max-h-[90vh] hide-scrollbar;
   }
   .close-btn {
-    @apply absolute left-2 top-2 p-2 text-lg border-2 rounded-full border-gray-500 bg-gray-700 text-gray-800 hover:border-red-500 hover:text-red-500 cursor-pointer;
+    @apply left-2 top-2 p-2 text-lg border-2 rounded-full border-gray-500 bg-gray-700 text-gray-800 hover:border-red-500 hover:text-red-500 cursor-pointer;
   }
 
   .wrapper {
-    @apply px-5 py-12 xs:p-10 max-w-7xl mx-auto flex flex-col relative z-10;
+    @apply px-5 py-12 xs:p-10 lg:w-7xl mx-auto flex flex-col relative z-10;
   }
 
   .trending {
-    @apply mt-20 flex flex-col items-center;
+    @apply mt-8 flex flex-col items-center;
 
     & ul {
-      @apply flex flex-row overflow-y-auto gap-5 -mt-10 w-full hide-scrollbar;
+      @apply grid gap-5 -mt-5 w-full;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+    @media (max-width: 768px) {
+      & ul {
+        @apply flex flex-row overflow-x-auto gap-5 -mt-5 w-full hide-scrollbar;
+      }
     }
 
     & ul li {

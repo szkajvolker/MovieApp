@@ -7,7 +7,7 @@ const MovieCard = ({
   movie: { title, vote_average, poster_path, release_date, original_language, likes = 0 },
 }) => {
   return (
-    <div className="movie-card">
+    <div className="movie-card shadow-md shadow-blue-500/70">
       <div className="flex flex-row justify-end mb-2">
         <button onClick={onLike} className="like-btn cursor-pointer">
           {likes > 0 ? (

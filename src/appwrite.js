@@ -9,19 +9,17 @@ const client = new Client().setEndpoint("https://fra.cloud.appwrite.io/v1").setP
 const database = new Databases(client);
 
 export const updateSearchCount = async (searchTerm, movie) => {
-  //1. Use Appwrite SDK to check if the sarch term exist in the db
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.equal("searchTerm", searchTerm),
     ]);
-    //2. If it does, update the count
+
     if (result.documents.length > 0) {
       const doc = result.documents[0];
 
       await database.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, {
         count: doc.count + 1,
       });
-      //3. If it does not, create a new document with the search term and count as 1
     } else {
       await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
         searchTerm,
@@ -49,9 +47,6 @@ export const getTrendingMovies = async () => {
 };
 
 export const incrementLikes = async (movieId, movie) => {
-  console.log(movie);
-
-  console.log(movieId);
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.equal("movie_id", [movieId]),

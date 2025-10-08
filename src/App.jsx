@@ -12,6 +12,8 @@ import {
   updateSearchCount,
 } from "./appwrite.js";
 import MovieDetails from "./components/MovieDetails.jsx";
+import Button from "./components/Button.jsx";
+import noMovie from "/no-movie.png";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -40,19 +42,40 @@ function App() {
 
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [likedMovies, setLikedMovies] = useState([]);
-  const [likedMovieIds, setLikedMovieIds] = useState([]);
   const [topMovies, setTopMovies] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const nextPage = () => {
+    const newPage = currentPage + 1;
+    setCurrentPage(newPage);
+    fetchMoviesData(debouncedSearchTerm, newPage);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+      fetchMoviesData(debouncedSearchTerm, newPage);
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, []);
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 1000, [searchTerm]);
 
-  const fetchMoviesData = async (query = "") => {
+  const fetchMoviesData = async (query = "", page = 1) => {
     setLoading(true);
     setErrorMsg("");
     try {
       const response = await fetch(
         query
-          ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-          : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`,
+          ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(
+              query
+            )}&page=${page}&include_adult=false`
+          : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${page}&include_adult=true&certification_country=US&certification.lte=PG-13`,
         API_OPTIONS
       );
       if (!response.ok) {
@@ -180,19 +203,19 @@ function App() {
     setMovies((prev) =>
       prev.map((m) => (m.id === movie.id ? { ...m, likes: (m.likes || 0) + 1 } : m))
     );
-    setLikedMovieIds((prev) => (prev.includes(movie.id) ? prev : [...prev, movie.id]));
     await loadLikedMovies();
   };
 
   const top10Movies = [...topMovies]
     .sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0))
-    .slice(0, 5);
+    .slice(0, 10);
 
   useEffect(() => {
-    fetchMoviesData(debouncedSearchTerm);
+    fetchMoviesData(debouncedSearchTerm, 1);
   }, [debouncedSearchTerm]);
 
   useEffect(() => {
+    fetchMoviesData("", 1);
     loadTrendingMovies();
     loadLikedMovies();
     fetchTopMovies();
@@ -213,9 +236,9 @@ function App() {
         ) : error ? (
           <Notification textToShow={errorMsg} color={"red"}></Notification>
         ) : (
-          trendingMovies.length > 0 && (
-            <section className="trending">
-              <h2 className="bg-gray-800 rounded-xl p-2">Trending Movies</h2>
+          <section className="trending">
+            <h2 className="bg-gray-800 rounded-xl p-2">Trending Movies</h2>
+            {trendingMovies.length > 0 ? (
               <ul>
                 {trendingMovies.map((movie, i) => (
                   <li key={movie.$id || i}>
@@ -224,13 +247,22 @@ function App() {
                   </li>
                 ))}
               </ul>
-            </section>
-          )
+            ) : (
+              <ul>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <li key={i}>
+                    <p>{i + 1}</p>
+                    <img src={noMovie} alt="No movie available" />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         )}
         {top10Movies.length > 0 && (
           <section className="trending">
             <h2 className="bg-gray-800 rounded-xl p-2">
-              <span className="text-gradient">Top 5 </span>movies{" "}
+              <span className="text-gradient">Top 10 </span>movies{" "}
               <span className="text-gradient"> by rating</span>
             </h2>
             <ul>
@@ -252,9 +284,9 @@ function App() {
             </ul>
           </section>
         )}
-        {likedMovies.length > 0 && (
-          <section className="trending">
-            <h2 className="bg-gray-800 rounded-xl p-2">Trending by likes</h2>
+        <section className="trending">
+          <h2 className="bg-gray-800 rounded-xl p-2">Trending by likes</h2>
+          {likedMovies.length > 0 ? (
             <ul>
               {likedMovies.map((movie, i) => (
                 <li key={movie.$id}>
@@ -263,11 +295,30 @@ function App() {
                 </li>
               ))}
             </ul>
-          </section>
-        )}
+          ) : (
+            <ul>
+              {Array.from({ length: 5 }, (_, i) => (
+                <li key={i}>
+                  <p>{i + 1}</p>
+                  <img src={noMovie} alt="No movie available" />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <section className="all-movies">
           <h2>All Movies</h2>
+          <div className="flex justify-center items-center gap-20">
+            <Button toggle="prev" onClick={prevPage}>
+              Prev
+            </Button>
+            <span className="text-white bg-gray-800 px-3 py-1 rounded">Page {currentPage}</span>
+            <Button toggle="next" onClick={nextPage}>
+              Next
+            </Button>
+          </div>
           {loading ? (
             <Loader />
           ) : error ? (
@@ -293,6 +344,15 @@ function App() {
         {showModal && (
           <MovieDetails movie={selectedMovie} onClick={() => setShowModal(false)} actors={actors} />
         )}
+        <div className="flex justify-center items-center gap-20 mt-5">
+          <Button toggle="prev" onClick={prevPage}>
+            Prev
+          </Button>
+          <p className="text-white bg-gray-800 px-3 py-1 rounded">Page {currentPage}</p>
+          <Button toggle="next" onClick={nextPage}>
+            Next
+          </Button>
+        </div>
       </div>
     </main>
   );

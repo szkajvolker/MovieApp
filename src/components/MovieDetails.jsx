@@ -16,9 +16,11 @@ const MovieDetails = ({
   return (
     <div className="modal">
       <div className="modal-content">
-        <button className="close-btn" onClick={onClick}>
-          X
-        </button>
+        <div className="w-full p-2">
+          <button className="close-btn" onClick={onClick}>
+            X
+          </button>
+        </div>
 
         <div className="flex justify-center items-center flex-col">
           <h3 className="text-xl font-bold">{title}</h3>
@@ -33,7 +35,7 @@ const MovieDetails = ({
           />
           <div className="flex flex-col bg-white/10 rounded-xl shadow items-center md:items-start md:pl-2">
             <h2 className="text-xl font-bold text-gray-200 mb-1 text-center">{tagline}</h2>
-            <p className="text-gray-200 mb-2 max-w-xs mx-auto md:mx-0 text-center md:text-left">
+            <p className="text-gray-300 mb-2 max-w-lg mx-auto text-center md:text-left">
               {overview}
             </p>
             <div className="flex items-center mb-2 gap-2">
