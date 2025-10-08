@@ -16,7 +16,7 @@ const MovieDetails = ({
   return (
     <div className="modal">
       <div className="modal-content">
-        <div className="w-full p-2">
+        <div className="w-full">
           <button className="close-btn" onClick={onClick}>
             X
           </button>
@@ -26,15 +26,15 @@ const MovieDetails = ({
           <h3 className="text-xl font-bold">{title}</h3>
           <p>{release_date}</p>
         </div>
-        <div className="flex flex-col md:flex-row items-center">
+        <div className="flex flex-col md:flex-row items-center gap-2">
           <img
             alt={title}
             width={200}
             src={poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : "/no-movie.png"}
-            className="border-1 border-gray-500 rounded-xl mx-auto mb-4 md:mb-0"
+            className="border-1 border-gray-500 rounded-xl mx-auto mb-4"
           />
-          <div className="flex flex-col bg-white/10 rounded-xl shadow items-center md:items-start md:pl-2">
-            <h2 className="text-xl font-bold text-gray-200 mb-1 text-center">{tagline}</h2>
+          <div className="flex flex-col bg-white/10 rounded-xl shadow justify-center items-center md:items-start p-2">
+            <h2 className="text-xl font-bold text-gray-200 mb-1 p-2 text-center">{tagline}</h2>
             <p className="text-gray-300 mb-2 max-w-lg mx-auto text-center md:text-left">
               {overview}
             </p>
@@ -50,7 +50,7 @@ const MovieDetails = ({
               </span>
               {genres.map((genre) => (
                 <span
-                  className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium uppercase"
+                  className="bg-gray-200 text-gray-700 px-2 py-2 rounded text-xs font-medium uppercase"
                   key={genre.id}
                 >
                   {genre.name}
@@ -60,7 +60,7 @@ const MovieDetails = ({
 
             <div className="overflow-x-auto whitespace-nowrap max-w-xs md:max-w-md lg:max-w-2xl">
               {actors.map((actor) => (
-                <div key={actor.id} className="inline-block w-32 mr-4 text-center">
+                <div key={actor.id} className="inline-block w-32 text-center">
                   <img
                     className="w-full h-48 object-cover rounded-lg pointer-events-none"
                     src={
