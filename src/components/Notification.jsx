@@ -1,7 +1,13 @@
 const Notification = ({ textToShow, color }) => {
+  const colorClasses = {
+    green: "text-green-500",
+    orange: "text-orange-500",
+    red: "text-red-500",
+    blue: "text-blue-500",
+  };
   return (
     <div className="absolute w-full flex">
-      <h2 className={`${color === "green" ? "text-green-500" : "text-red-500"}`}>{textToShow}</h2>
+      <h2 className={colorClasses[color]}>{textToShow}</h2>
     </div>
   );
 };
