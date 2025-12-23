@@ -118,7 +118,6 @@ function App() {
       } else {
         const data = await res.json();
         setTopMovies(data.results || []);
-        console.log(data);
       }
     } catch (err) {
       setErrorMsg("Failed to get data", err);
@@ -201,7 +200,9 @@ function App() {
     }
     await incrementLikes(movie.id, movie);
     setMovies((prev) =>
-      prev.map((m) => (m.id === movie.id ? { ...m, likes: (m.likes || 0) + 1 } : m))
+      prev.map((m) =>
+        m.id === movie.id ? { ...m, likes: (m.likes || 0) + 1 } : m
+      )
     );
     await loadLikedMovies();
   };
@@ -228,13 +229,14 @@ function App() {
         <header>
           <img src="./hero.png" alt="" />
           <h1>
-            Find <span className="text-gradient">Movies</span> You'll Enjoy Without the Hassle
+            Find <span className="text-gradient">Movies</span> You'll Enjoy
+            Without the Hassle
           </h1>
         </header>
         {loading ? (
           <Loader />
         ) : error ? (
-          <Notification textToShow={errorMsg} color={"red"}></Notification>
+          <Notification textToShow={errorMsg} color={"red"} />
         ) : (
           <section className="trending">
             <h2 className="bg-gray-800 rounded-xl p-2">Trending Movies</h2>
@@ -262,8 +264,8 @@ function App() {
         {top10Movies.length > 0 && (
           <section className="trending">
             <h2 className="bg-gray-800 rounded-xl p-2">
-              <span className="text-gradient">Top 10 </span>movies{" "}
-              <span className="text-gradient"> by rating</span>
+              <span className="text-gradient">Top 10</span>movies{" "}
+              <span className="text-gradient">by rating</span>
             </h2>
             <ul>
               {top10Movies.map((movie, i) => (
@@ -314,7 +316,9 @@ function App() {
             <Button toggle="prev" onClick={prevPage}>
               Prev
             </Button>
-            <span className="text-white bg-gray-800 px-3 py-1 rounded">Page {currentPage}</span>
+            <span className="text-white bg-gray-800 px-3 py-1 rounded">
+              Page {currentPage}
+            </span>
             <Button toggle="next" onClick={nextPage}>
               Next
             </Button>
@@ -322,9 +326,9 @@ function App() {
           {loading ? (
             <Loader />
           ) : error ? (
-            <Notification textToShow={errorMsg} color={"red"}></Notification>
+            <Notification textToShow={errorMsg} color="red" />
           ) : movies.length === 0 ? (
-            <Notification textToShow={"Movie not found"} color={"orange"}></Notification>
+            <Notification textToShow={"Movie not found"} color="orange" />
           ) : (
             <ul>
               {movies.map((movie) => (
@@ -342,13 +346,19 @@ function App() {
           )}
         </section>
         {showModal && (
-          <MovieDetails movie={selectedMovie} onClick={() => setShowModal(false)} actors={actors} />
+          <MovieDetails
+            movie={selectedMovie}
+            onClick={() => setShowModal(false)}
+            actors={actors}
+          />
         )}
         <div className="flex justify-center items-center gap-20 mt-5">
           <Button toggle="prev" onClick={prevPage}>
             Prev
           </Button>
-          <p className="text-white bg-gray-800 px-3 py-1 rounded">Page {currentPage}</p>
+          <p className="text-white bg-gray-800 px-3 py-1 rounded">
+            Page {currentPage}
+          </p>
           <Button toggle="next" onClick={nextPage}>
             Next
           </Button>
