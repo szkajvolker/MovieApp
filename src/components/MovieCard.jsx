@@ -4,10 +4,17 @@ import { IoMdHeartDislike } from "react-icons/io";
 const MovieCard = ({
   onClick,
   onLike,
-  movie: { title, vote_average, poster_path, release_date, original_language, likes = 0 },
+  movie: {
+    title,
+    vote_average,
+    poster_path,
+    release_date,
+    original_language,
+    likes = 0,
+  },
 }) => {
   return (
-    <div className="movie-card shadow-md shadow-blue-500/70">
+    <div className="movie-card shadow-md shadow-gray-700/70">
       <div className="flex flex-row justify-end mb-2">
         <button onClick={onLike} className="like-btn cursor-pointer">
           {likes > 0 ? (
@@ -19,7 +26,11 @@ const MovieCard = ({
         <span className="ml-1 text-white">{likes}</span>
       </div>
       <img
-        src={poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : "/no-movie.png"}
+        src={
+          poster_path
+            ? `https://image.tmdb.org/t/p/original/${poster_path}`
+            : "/no-movie.png"
+        }
         alt={title}
       />
       <div className="mt-4">
@@ -31,7 +42,9 @@ const MovieCard = ({
             <span>•</span>
             <p className="lang">{original_language}</p>
             <span>•</span>
-            <p className="year">{release_date ? release_date.split("-")[0] : "N/A"}</p>
+            <p className="year">
+              {release_date ? release_date.split("-")[0] : "N/A"}
+            </p>
           </div>
           <div className="">
             <button

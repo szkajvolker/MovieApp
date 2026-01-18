@@ -27,7 +27,7 @@
   }
 
   h1 {
-    @apply mx-auto max-w-4xl text-center text-5xl font-bold leading-tight tracking-[-1%] text-white sm:text-[64px] sm:leading-[76px];
+    @apply mx-auto max-w-4xl text-center font-bold leading-tight tracking-[-1%] text-white sm:text-[32px] sm:leading-[76px];
   }
 
   h2 {
@@ -37,14 +37,29 @@
   main {
     @apply min-h-screen relative bg-primary;
   }
-
   header {
-    @apply sm:mt-10 mt-5;
+    @apply max-w-7xl;
   }
 
   header img {
-    @apply w-full max-w-lg h-auto object-contain mx-auto drop-shadow-md;
+    @apply w-full h-auto drop-shadow-md;
   }
+}
+
+.carousel {
+  @apply flex flex-row gap-4 overflow-x-auto scroll-smooth;
+}
+.carousel::-webkit-scrollbar {
+  height: 8px;
+  background: transparent;
+}
+.carousel::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #152353 0%, #4b7191 100%);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.carousel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @layer components {
@@ -52,31 +67,29 @@
     @apply bg-hero-pattern w-full h-screen bg-center bg-cover absolute z-0;
   }
   .modal {
-    @apply fixed inset-0  w-screen h-screen bg-black/50 flex items-center justify-center z-[1000];
+    @apply fixed inset-0  w-screen h-screen  bg-black/20 flex items-center justify-center backdrop-blur-md z-1000;
   }
   .modal-content {
-    @apply w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl bg-gray-800 rounded-2xl flex flex-col items-center text-white/90 relative overflow-y-auto
-    max-h-[90vh] hide-scrollbar;
+    @apply w-full max-w-xs sm:max-w-md md:max-w-4xl lg:max-w-7xl sm:px-6 m-2  rounded-2xl flex flex-col items-center text-white/90 relative overflow-auto
+    max-h-[90vh];
   }
   .close-btn {
     @apply left-2 top-2 p-2 text-lg border-2 rounded-full border-gray-500 bg-gray-700 text-gray-800 hover:border-red-500 hover:text-red-500 cursor-pointer;
   }
 
   .wrapper {
-    @apply px-5 py-12 xs:p-10 lg:w-7xl mx-auto flex flex-col relative z-10;
+    @apply px-5 lg:w-7xl mx-auto flex flex-col relative z-10;
   }
 
   .trending {
-    @apply mt-8 flex flex-col items-center;
+    @apply flex flex-col items-center;
 
     & ul {
-      @apply grid gap-5 -mt-5 w-full;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
+      @apply flex flex-row overflow-x-auto w-full hide-scrollbar;
     }
     @media (max-width: 768px) {
       & ul {
-        @apply flex flex-row overflow-x-auto gap-5 -mt-5 w-full hide-scrollbar;
+        @apply flex flex-row overflow-x-auto  -mt-5 w-full hide-scrollbar;
       }
     }
 
@@ -85,7 +98,7 @@
     }
 
     & ul li p {
-      @apply fancy-text mt-[22px] text-nowrap;
+      @apply fancy-text text-nowrap;
     }
 
     & ul li img {
@@ -94,14 +107,14 @@
   }
 
   .search {
-    @apply w-full bg-light-100/5 px-4 py-3 rounded-lg mt-10 max-w-3xl mx-auto;
+    @apply w-full bg-light-100/5 px-1 py-3 rounded-lg mt-10 max-w-2xl mx-auto;
 
     & div {
       @apply relative flex items-center;
     }
 
     & img {
-      @apply absolute left-2 h-5 w-5;
+      @apply absolute right-1 top-3 h-5 w-5;
     }
 
     & input {

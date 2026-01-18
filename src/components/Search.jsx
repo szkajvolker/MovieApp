@@ -1,15 +1,32 @@
+import { useState } from "react";
+
 const Search = ({ searchTerm, setSearchTerm }) => {
+  const [localSearchInput, setLocalSearchInput] = useState(searchTerm);
   return (
     <div className="search">
       <div>
-        <img src="search.svg" alt="search" />
-
         <input
           type="text"
           placeholder="Search trough movies from database"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={localSearchInput}
+          onChange={(e) => setLocalSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setSearchTerm(localSearchInput);
+            }
+          }}
         />
+        <button
+          onClick={() => {
+            setSearchTerm(localSearchInput);
+          }}
+        >
+          <img
+            src="search.svg"
+            alt="search"
+            className="hover:scale-130 cursor-pointer"
+          />
+        </button>
       </div>
     </div>
   );
