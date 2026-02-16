@@ -8,6 +8,7 @@ import { fetchMoviesData } from "./API/tmdbapi.js";
 import Navbar from "./components/Navbar.jsx";
 
 import { NotificationHandler } from "./components/Notification.jsx";
+import Footer from "./components/Footer.jsx";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,6 +67,7 @@ function App() {
           onPrev={handlePrev}
           onNext={handleNext}
         />
+        <Footer />
       </div>
     </main>
   );
