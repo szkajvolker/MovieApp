@@ -1,3 +1,5 @@
+import { IoClose } from "react-icons/io5";
+
 const MovieDetails = ({
   onClick,
   actors,
@@ -32,7 +34,7 @@ const MovieDetails = ({
       >
         <div className="w-full flex flex-row p-4">
           <button className="close-btn ml-auto justify-end" onClick={onClick}>
-            X
+            <IoClose className="text-2xl hover:text-red-500 transition-colors duration-200" />
           </button>
         </div>
 

@@ -9,12 +9,7 @@ import MovieCard from "./MovieCard";
 import MovieDetails from "./MovieDetails";
 import Loader from "./Loader";
 
-const Content = ({
-  searchTerm,
-  currentPage,
-  setTotalPages,
-  setNotification,
-}) => {
+const Content = ({ searchTerm, currentPage, setTotalPages }) => {
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [actors, setActors] = useState([]);
@@ -41,7 +36,6 @@ const Content = ({
       setMovies(moviesWithLikes);
 
       setLoading(false);
-      setNotification({ text: "Successfully fetched movies.", color: "green" });
     };
     getMovies();
   }, [searchTerm, currentPage]);
