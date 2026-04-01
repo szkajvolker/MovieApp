@@ -8,7 +8,7 @@ const Footer = () => {
               <h3 className="text-white font-bold text-xl mb-2">MovieApp</h3>
               <p className="flex text-white/60 text-sm flex-row gap-2">
                 © {new Date().getFullYear()} • Created by
-                <p className="text-white">István Szabó</p>
+                <span className="text-white">István Szabó</span>
               </p>
             </div>
 

@@ -78,12 +78,6 @@ function App() {
 
   return (
     <main>
-      <NotificationHandler
-        textToShow={notification.text}
-        color={notification.color}
-        delay={2000}
-        onClose={() => setNotification({ text: "", color: "" })}
-      />
       <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <div className="pattern" />
       <div className="wrapper">
