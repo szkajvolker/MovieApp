@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   fetchMoviesData,
+  fetchMoviesByGenre,
   handleShowDetails,
   getMovieActors,
 } from "../API/tmdbapi";
@@ -9,7 +10,12 @@ import MovieCard from "./MovieCard";
 import MovieDetails from "./MovieDetails";
 import Loader from "./Loader";
 
-const Content = ({ searchTerm, currentPage }) => {
+const Content = ({
+  searchTerm,
+  currentPage,
+  selectedGenres,
+  onTotalPagesChange,
+}) => {
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [actors, setActors] = useState([]);
@@ -19,8 +25,17 @@ const Content = ({ searchTerm, currentPage }) => {
   useEffect(() => {
     const getMovies = async () => {
       setLoading(true);
-      const data = await fetchMoviesData(searchTerm, currentPage);
+
+      const data =
+        !searchTerm && selectedGenres.length > 0
+          ? await fetchMoviesByGenre(selectedGenres, currentPage)
+          : await fetchMoviesData(searchTerm, currentPage);
+
       let moviesWithLikes = data.results || [];
+
+      if (onTotalPagesChange) {
+        onTotalPagesChange(data.total_pages || 1);
+      }
 
       const likesData = await getAllLikes();
       if (likesData && Array.isArray(likesData)) {
@@ -36,7 +51,7 @@ const Content = ({ searchTerm, currentPage }) => {
       setLoading(false);
     };
     getMovies();
-  }, [searchTerm, currentPage]);
+  }, [searchTerm, currentPage, selectedGenres]);
 
   const sortedMoviesByLikes = [...movies].sort(
     (a, b) => (b.likes || 0) - (a.likes || 0),
@@ -86,6 +101,7 @@ const Content = ({ searchTerm, currentPage }) => {
           onLike={() => handleLike(movie)}
         />
       ))}
+
       {showModal && (
         <MovieDetails
           movie={selectedMovie}

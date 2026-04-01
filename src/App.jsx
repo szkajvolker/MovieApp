@@ -4,17 +4,38 @@ import Hero from "./components/Hero.jsx";
 import Search from "./components/Search.jsx";
 import Pagination from "./components/Pagination.jsx";
 import Content from "./components/Content.jsx";
+import GenreFilter from "./components/GenreFilter.jsx";
 import { fetchMoviesData } from "./API/tmdbapi.js";
 import Navbar from "./components/Navbar.jsx";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
 
   const handleNext = () => {
-    const newPage = currentPage + 1;
-    setCurrentPage(newPage);
-    fetchMoviesData(searchTerm, newPage);
+    if (currentPage < totalPages) {
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+      fetchMoviesData(searchTerm, newPage);
+    }
+  };
+
+  const handleJumpToPage = (e) => {
+    if (e.key === "Enter") {
+      let newPage = parseInt(e.target.value);
+
+      if (newPage > totalPages) {
+        newPage = totalPages;
+      } else if (newPage < 1 || isNaN(newPage)) {
+        newPage = 1;
+      }
+
+      setCurrentPage(newPage);
+      e.target.value = "";
+      e.target.blur();
+    }
   };
 
   const handlePrev = () => {
@@ -29,6 +50,29 @@ function App() {
     setCurrentPage(1);
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedGenres]);
+
+  const handleGenreSelect = (genreId) => {
+    if (genreId === null) {
+      setSelectedGenres([]);
+    } else {
+      setSelectedGenres((prev) => {
+        const isSelected = prev.includes(genreId);
+
+        if (isSelected) {
+          return prev.filter((id) => id !== genreId);
+        } else {
+          if (prev.length < 3) {
+            return [...prev, genreId];
+          }
+          return prev;
+        }
+      });
+    }
+  };
+
   return (
     <main>
       <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -36,16 +80,32 @@ function App() {
       <div className="wrapper">
         <Hero />
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+        {!searchTerm && (
+          <GenreFilter
+            onGenreSelect={handleGenreSelect}
+            selectedGenres={selectedGenres}
+          />
+        )}
         <Pagination
           currentPage={currentPage}
+          totalPages={totalPages}
           onPrev={handlePrev}
           onNext={handleNext}
+          onKeyDown={handleJumpToPage}
         />
-        <Content searchTerm={searchTerm} currentPage={currentPage} />
+        <Content
+          searchTerm={searchTerm}
+          currentPage={currentPage}
+          selectedGenres={selectedGenres}
+          onTotalPagesChange={setTotalPages}
+        />
         <Pagination
           currentPage={currentPage}
+          totalPages={totalPages}
           onPrev={handlePrev}
           onNext={handleNext}
+          onKeyDown={handleJumpToPage}
         />
       </div>
     </main>

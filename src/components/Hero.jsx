@@ -163,6 +163,7 @@ const Hero = () => {
           </div>
         )}
       </section>
+
       <section className="trending">
         <h2 className="bg-gray-800 rounded-xl p-2">Trending Movies</h2>
         {trendingMovies.length > 0 ? (

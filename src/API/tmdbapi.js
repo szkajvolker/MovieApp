@@ -36,6 +36,23 @@ export const fetchMoviesData = async (query = "", page = 1) => {
   return data;
 };
 
+export const fetchMoviesByGenre = async (genreIds = [], page = 1) => {
+  let genreParam = '';
+  
+  if (Array.isArray(genreIds) && genreIds.length > 0) {
+    genreParam = `&with_genres=${genreIds.join(',')}`;
+  } else if (genreIds) {
+    genreParam = `&with_genres=${genreIds}`;
+  }
+  
+  const url = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${page}&include_adult=false${genreParam}`;
+
+  const response = await fetch(url, API_OPTIONS);
+  if (!response.ok) throw new Error("Failed to fetch movies by genre");
+  const data = await response.json();
+  return data;
+};
+
 export const getMovieActors = async (id) => {
   try {
     const response = await fetch(
