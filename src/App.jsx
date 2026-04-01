@@ -8,6 +8,9 @@ import GenreFilter from "./components/GenreFilter.jsx";
 import { fetchMoviesData } from "./API/tmdbapi.js";
 import Navbar from "./components/Navbar.jsx";
 
+import { NotificationHandler } from "./components/Notification.jsx";
+import Footer from "./components/Footer.jsx";
+
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,6 +78,12 @@ function App() {
 
   return (
     <main>
+      <NotificationHandler
+        textToShow={notification.text}
+        color={notification.color}
+        delay={2000}
+        onClose={() => setNotification({ text: "", color: "" })}
+      />
       <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <div className="pattern" />
       <div className="wrapper">
@@ -107,6 +116,7 @@ function App() {
           onNext={handleNext}
           onKeyDown={handleJumpToPage}
         />
+        <Footer />
       </div>
     </main>
   );

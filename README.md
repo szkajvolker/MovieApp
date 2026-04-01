@@ -75,7 +75,7 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## License
 
-[MIT](LICENSE)
+
 Features
 🔍 Search for movies using the TMDB API
 🎬 View trending movies by search count and by likes

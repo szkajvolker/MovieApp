@@ -48,6 +48,7 @@ const Content = ({
         updateSearchCount(searchTerm, moviesWithLikes[0]);
       }
       setMovies(moviesWithLikes);
+
       setLoading(false);
     };
     getMovies();

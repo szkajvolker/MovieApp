@@ -1,5 +1,6 @@
 import { IoIosHeart } from "react-icons/io";
 import { IoMdHeartDislike } from "react-icons/io";
+import { IoEye } from "react-icons/io5";
 
 const MovieCard = ({
   onClick,
@@ -14,7 +15,7 @@ const MovieCard = ({
   },
 }) => {
   return (
-    <div className="movie-card shadow-md shadow-gray-700/70">
+    <div className="movie-card">
       <div className="flex flex-row justify-end mb-2">
         <button onClick={onLike} className="like-btn cursor-pointer">
           {likes > 0 ? (
@@ -32,6 +33,7 @@ const MovieCard = ({
             : "/no-movie.png"
         }
         alt={title}
+        loading="lazy"
       />
       <div className="mt-4">
         <h3>{title}</h3>
@@ -48,10 +50,10 @@ const MovieCard = ({
           </div>
           <div className="">
             <button
-              className="border-2 rounded-xl p-2  cursor-pointer bg-gray-800 hover:bg-gray-600 hover:text-white transition-all duration-300"
+              className="rounded-full p-2  cursor-pointer bg-neutral-800 hover:bg-neutral-600 hover:text-light-100 transition-all duration-300"
               onClick={onClick}
             >
-              Details
+              <IoEye className="text-xl" color="white" />
             </button>
           </div>
         </div>

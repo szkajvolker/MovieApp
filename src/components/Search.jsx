@@ -2,10 +2,12 @@ import { useState } from "react";
 
 const Search = ({ searchTerm, setSearchTerm }) => {
   const [localSearchInput, setLocalSearchInput] = useState(searchTerm);
+
   return (
     <div className="search">
       <div>
         <input
+          className="text-xs lg:text-xl"
           type="text"
           placeholder="Search trough movies from database"
           value={localSearchInput}
@@ -13,12 +15,14 @@ const Search = ({ searchTerm, setSearchTerm }) => {
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               setSearchTerm(localSearchInput);
+              setLocalSearchInput("");
             }
           }}
         />
         <button
           onClick={() => {
             setSearchTerm(localSearchInput);
+            setLocalSearchInput("");
           }}
         >
           <img
