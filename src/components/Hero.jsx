@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchTopMovies } from "../API/tmdbapi";
 import { getTrendingMovies, getTrendingMoviesByLikes } from "../appwrite";
 import noMovie from "/no-movie.png";
+import { gsap } from "gsap";
 
 const Hero = () => {
   const [topMovies, setTopMovies] = useState([]);
@@ -9,6 +10,8 @@ const Hero = () => {
   const [likedMovies, setLikedMovies] = useState([]);
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const carouselRef = useRef(null);
+  const carouselTrackRef = useRef(null);
 
   useEffect(() => {
     const getTopMovies = async () => {
@@ -19,6 +22,75 @@ const Hero = () => {
     loadTrendingMovies();
     loadLikedMovies();
   }, []);
+
+  useEffect(() => {
+    if (topMovies.length > 0 && carouselTrackRef.current) {
+      const track = carouselTrackRef.current;
+
+      const images = track.querySelectorAll("img");
+      let loadedImages = 0;
+      let animation;
+
+      const startAnimation = () => {
+        const firstSlide = track.firstElementChild;
+        if (!firstSlide) return;
+
+        const slideWidth = firstSlide.offsetWidth + 16;
+        const singleSetWidth = slideWidth * topMovies.length;
+
+        gsap.set(track, { x: 0 });
+
+        animation = gsap.to(track, {
+          x: -singleSetWidth,
+          duration: topMovies.length * 1.8,
+          ease: "none",
+          repeat: -1,
+          repeatDelay: 0,
+          onRepeat: () => {
+            gsap.set(track, { x: 0 });
+          },
+        });
+
+        const movieSlides = track.querySelectorAll(".movie-slide");
+        const handleMouseEnter = () => animation && animation.pause();
+        const handleMouseLeave = () => animation && animation.play();
+
+        movieSlides.forEach((slide) => {
+          slide.addEventListener("mouseenter", handleMouseEnter);
+          slide.addEventListener("mouseleave", handleMouseLeave);
+        });
+
+        return () => {
+          if (animation) animation.kill();
+          movieSlides.forEach((slide) => {
+            slide.removeEventListener("mouseenter", handleMouseEnter);
+            slide.removeEventListener("mouseleave", handleMouseLeave);
+          });
+        };
+      };
+
+      if (images.length === 0) {
+        return startAnimation();
+      } else {
+        images.forEach((img) => {
+          if (img.complete) {
+            loadedImages++;
+          } else {
+            img.onload = () => {
+              loadedImages++;
+              if (loadedImages === images.length) {
+                return startAnimation();
+              }
+            };
+          }
+        });
+
+        if (loadedImages === images.length) {
+          return startAnimation();
+        }
+      }
+    }
+  }, [topMovies]);
 
   const loadTrendingMovies = async () => {
     setError(false);
@@ -63,6 +135,34 @@ const Hero = () => {
           <div className="absolute inset-0 backdrop-blur-none rounded-xl bg-black/10 flex items-center justify-center"></div>
         </div>
       </header>
+      <section className="netflix-carousel" ref={carouselRef}>
+        <h2 className="bg-gray-800 rounded-xl p-2">
+          <span className="text-gradient">Trending </span>movies{" "}
+        </h2>
+        {topMovies.length > 0 && (
+          <div className="carousel-track" ref={carouselTrackRef}>
+            {[...Array(3)].map((_, setIndex) =>
+              topMovies.map((movie, i) => (
+                <div
+                  key={`set${setIndex}-${movie.id || i}`}
+                  className="movie-slide"
+                >
+                  <img
+                    className="rounded-xl w-full pointer-events-none"
+                    src={
+                      movie.poster_url ||
+                      (movie.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                        : "")
+                    }
+                    alt={movie.title || movie.name || "Movie"}
+                  />
+                </div>
+              )),
+            )}
+          </div>
+        )}
+      </section>
       <section className="trending">
         <h2 className="bg-gray-800 rounded-xl p-2">Trending Movies</h2>
         {trendingMovies.length > 0 ? (
@@ -85,27 +185,7 @@ const Hero = () => {
           </ul>
         )}
       </section>
-      <h2 className="bg-gray-800 justify-self-center rounded-xl">
-        <span className="text-gradient">Trending </span>movies{" "}
-      </h2>
-      {topMovies.length > 0 && (
-        <ul className="carousel">
-          {topMovies.map((movie, i) => (
-            <li key={movie.id || i} className="mt-2 mb-1 shrink-0 w-40">
-              <img
-                className="rounded-xl w-full pointer-events-none"
-                src={
-                  movie.poster_url ||
-                  (movie.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                    : "")
-                }
-                alt={movie.title || movie.name || "Movie"}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+
       <section className="trending">
         <h2 className="bg-gray-800 rounded-xl p-2 mt-2">Trending by likes</h2>
         {likedMovies.length > 0 ? (
